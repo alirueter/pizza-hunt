@@ -1,22 +1,41 @@
 const { Schema, model } = require('mongoose');
 
 // create the schema for data to be stored when users create a new pizza
-const PizzaSchema = new Schema({
-    pizzaName: {
-        type: String
+const PizzaSchema = new Schema(
+    {
+        pizzaName: {
+            type: String
+        },
+        createdBy: {
+            type: String
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        },
+        size: {
+            type: String,
+            default: 'Large'
+        },
+        toppings: [],
+        comments: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Comment'
+            }
+        ],  
     },
-    createdBy: {
-        type: String
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    size: {
-        type: String,
-        default: 'Large'
-    },
-    toppings: []
+    {
+        toJSON: {
+            virtuals: true,
+        },
+        id: false
+    }
+);
+
+// get total count of comments and replies on retrieval - VIRTUAL PROPERTY
+PizzaSchema.virtual('commentCount').get(function() {
+    return this.comments.length;
 });
 
 // create the Pizza model using the PizzaSchema
